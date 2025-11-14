@@ -168,7 +168,7 @@
 
 <canvas id="confetti"></canvas>
 
-<audio id="birthdayMusic" preload="auto">
+<audio id="birthdayMusic" preload="auto" autoplay>
   <source src="https://raw.githubusercontent.com/krsnaaaaaa/songs/main/HAPPY%20BIRTHDAY%20INSTRUMENTAL.mp3" type="audio/mpeg">
 </audio>
 
@@ -213,36 +213,49 @@ document.body.addEventListener('click', () => {
   music.play().catch(()=>{});
 },{ once:true });
 
-(function(){
+// Real birthday countdown function
+(function () {
   const second = 1000,
-        minute = second*60,
-        hour   = minute*60;
+        minute = second * 60,
+        hour = minute * 60,
+        day = hour * 24;
 
-  const countDown = new Date().getTime() + (10 * 1000);
+  let today = new Date(),
+      dd = String(today.getDate()).padStart(2, "0"),
+      mm = String(today.getMonth() + 1).padStart(2, "0"),
+      yyyy = today.getFullYear(),
+      nextYear = yyyy + 1,
+      dayMonth = "11/15/",
+      birthday = dayMonth + yyyy;
+  
+  today = mm + "/" + dd + "/" + yyyy;
+  if (today > birthday) {
+    birthday = dayMonth + nextYear;
+  }
 
-  const x = setInterval(()=>{
-    const now = new Date().getTime();
-    const distance = countDown - now;
+  const countDown = new Date(birthday).getTime(),
+        x = setInterval(function() {    
+          const now = new Date().getTime(),
+                distance = countDown - now;
 
-    document.getElementById("days").innerText = 0;
-    document.getElementById("hours").innerText = 0;
-    document.getElementById("minutes").innerText = Math.floor((distance % hour)/minute);
-    document.getElementById("seconds").innerText = Math.floor((distance % minute)/second);
+          document.getElementById("days").innerText = Math.floor(distance / day);
+          document.getElementById("hours").innerText = Math.floor((distance % day) / hour);
+          document.getElementById("minutes").innerText = Math.floor((distance % hour) / minute);
+          document.getElementById("seconds").innerText = Math.floor((distance % minute) / second);
 
-    if(distance < 0){
-      document.getElementById("headline").innerText = "Happy Birthday Princess!! 👸";
-      document.getElementById("headline").classList.add("birthday-headline");
-      document.getElementById("countdown").style.display="none";
-      document.getElementById("content").style.display="block";
-      document.body.classList.add("birthday-mode");
-      startConfetti();
-      startHearts();
-      clearInterval(x);
-    }
-  },1000);
-})();
+          if (distance < 0) {
+            document.getElementById("headline").innerText = "It's ur birthday! Enjoy Like A FREAK 👸";
+            document.getElementById("countdown").style.display = "none";
+            document.getElementById("content").style.display = "block";
+            document.body.classList.add("birthday-mode");
+            startConfetti();
+            startHearts();
+            clearInterval(x);
+          }
+        }, 1000);
+}());
 
-/* Confetti */
+// Confetti function
 function startConfetti(){
   const canvas=document.getElementById('confetti');
   const ctx=canvas.getContext('2d');
@@ -326,7 +339,7 @@ function startConfetti(){
   update();
 }
 
-/* Floating hearts */
+// Floating hearts function
 function startHearts(){
   setInterval(()=>{
     let heart = document.createElement("div");
